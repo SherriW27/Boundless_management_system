@@ -98,7 +98,7 @@ $conn->close();
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>場地租借管理</title>
+    <title>場地租借管理測試</title>
 
     <!-- Custom fonts for this template -->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
