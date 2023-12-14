@@ -1,8 +1,9 @@
 <?php
-require_once("boundless_connect.php");
+require_once("../boundless_connect.php");
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
 // 本來的
 // $sql = "SELECT * FROM classroom WHERE valid=1 ORDER BY id ASC ";
 // $result = $conn->query($sql);
@@ -40,6 +41,10 @@ $pageCount = ceil($countTotal / $dataPerPage); // 計算需要的頁數
 //     LIMIT 0, $dataPerPage"; //從key 0開始，抓5筆
 // }
 
+// 在這裡初始化 $pageNow 和 $order 變量
+$pageNow = 1;
+$order = 1; // 或任何預設排序方式
+
 //升降冪
 if (isset($_GET["page"]) && isset($_GET["order"])) {
     $pageNow = $_GET["page"];
@@ -63,16 +68,35 @@ if (isset($_GET["page"]) && isset($_GET["order"])) {
     // ------------------------------------------------------------------------------------------------------------------------------------------
 
     // ------------------------------------------------------------------------------------------------------------------------------------------
-} elseif (isset($_GET["search"])) {
-    $search = $_GET["search"];
-    $sql = "SELECT * FROM classroom WHERE name LIKE '%$search%' OR email LIKE '%$search%' OR address LIKE '%$search%'  AND valid=1";
-} else {
-    $pageNow = 1;
-    $order = 1;
+}
+// elseif (isset($_GET["search"])) {
+//     $search = $_GET["search"];
+//     $sql = "SELECT * FROM classroom WHERE name LIKE '%$search%' OR email LIKE '%$search%' OR address LIKE '%$search%'  AND valid=1";
+// } 
+else {
+    // $pageNow = 1;
+    // $order = 1;
+    // if (isset($_GET["search"])) {
+    //     $search = $_GET["search"];
+    //     $sql = "SELECT * FROM classroom WHERE name LIKE '%$search%' OR email LIKE '%$search%' AND valid=1";
+    // } else {
+    //     $sql = "SELECT * FROM classroom WHERE valid=1 ORDER BY id ASC LIMIT 0, $dataPerPage";
+    // }
+
     if (isset($_GET["search"])) {
         $search = $_GET["search"];
-        $sql = "SELECT * FROM classroom WHERE name LIKE '%$search%' OR email LIKE '%$search%' AND valid=1";
+
+
+        // 檢查搜尋條件是不是數字（即搜尋 ID）
+        if (is_numeric($search)) {
+            // 直接比較 ID
+            $sql = "SELECT * FROM classroom WHERE id = $search AND valid=1";
+        } else {
+            // 如果不是數字，則搜尋其他字段
+            $sql = "SELECT * FROM classroom WHERE name LIKE '%$search%' AND valid=1";
+        }
     } else {
+        // 無搜尋條件的情況
         $sql = "SELECT * FROM classroom WHERE valid=1 ORDER BY id ASC LIMIT 0, $dataPerPage";
     }
 }
@@ -135,107 +159,109 @@ $conn->close();
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fa-solid fa-music"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">Boundless <sup></sup></div>
+                <div class="sidebar-brand-text mx-3">Boundless</div>
             </a>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard -->
+            <!-- Nav Item -->
             <li class="nav-item">
-                <a class="nav-link" href="index.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                <a class="nav-link" href="user-list.php">
+                    <i class="fa-solid fa-user"></i>
+                    <span>會員</span></a>
             </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Interface
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <!-- <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Components</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="add-classroom.php">新增</a>
-
-                    </div>
-                </div>
-            </li> -->
-
-            <!-- Nav Item - Utilities Collapse Menu -->
+            <!-- Nav Item -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilities</span>
+                <a class="nav-link" href="instrument-list.php">
+                    <i class="fa-solid fa-guitar"></i>
+                    <span>樂器</span>
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            </li>
+
+            <!-- Nav Item - 折疊式選單 -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCourses" aria-expanded="true" aria-controls="collapseCourses">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>課程&教師</span>
+                </a>
+                <div id="collapseCourses" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.php">Colors</a>
-                        <a class="collapse-item" href="utilities-border.php">Borders</a>
-                        <a class="collapse-item" href="utilities-animation.php">Animations</a>
-                        <a class="collapse-item" href="utilities-other.php">Other</a>
+                        <!-- <h6 class="collapse-header">Custom Components:</h6> -->
+                        <a class="collapse-item" href="lesson-list.php">課程管理</a>
+                        <a class="collapse-item" href="teacher-list.php">教師資訊</a>
                     </div>
                 </div>
             </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Addons
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Pages</span>
-                </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Login Screens:</h6>
-                        <a class="collapse-item" href="login.php">Login</a>
-                        <a class="collapse-item" href="register.php">Register</a>
-                        <a class="collapse-item" href="forgot-password.php">Forgot Password</a>
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Other Pages:</h6>
-                        <a class="collapse-item" href="404.php">404 Page</a>
-                        <a class="collapse-item" href="blank.php">Blank Page</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="charts.php">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
+            <!-- Nav Item -->
             <li class="nav-item active">
-                <a class="nav-link collapsed" href="classroom-list.php" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link collapsed" href="classroom-list.php" data-toggle="collapse" data-target="#collapseRental" aria-expanded="true" aria-controls="collapseRental">
                     <i class="fa-solid fa-map-location-dot"></i>
                     <span>場地租借管理</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseRental" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">功能:</h6>
                         <a class="collapse-item" href="classroom-add.php">新增</a>
 
                     </div>
                 </div>
+            </li>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>分類標籤</span>
+                </a>
+                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">樂器</h6>
+                        <a class="collapse-item" href="brand_list.php">品牌</a>
+                        <a class="collapse-item" href="instrument_category_list.php">樂器類別</a>
+                        <a class="collapse-item" href="instrument_subcategory_list.php">樂器子類別</a>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">課程</h6>
+                        <a class="collapse-item" href="lesson_list.php">課程</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#orderCollapsePages" aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fa-solid fa-check-to-slot"></i>
+                    <span>訂單</span>
+                </a>
+                <div id="orderCollapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="order_list.php">
+                            <span>樂器訂單</span>
+                        </a>
+                        <a class="collapse-item" href="lesson_order_list.php">
+                            <span>課程訂單</span>
+                        </a>
+                        <a class="collapse-item" href="classroom_order_list.php">
+                            <span>場地租借訂單</span>
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item -->
+            <li class="nav-item">
+                <a class="nav-link" href="coupons-list.php">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>優惠券</span></a>
+            </li>
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item">
+                <a class="nav-link" href="article-list.php">
+                    <i class="fa-solid fa-feather-pointed"></i>
+                    <span>文章</span></a>
             </li>
 
             <!-- Divider -->
@@ -245,7 +271,6 @@ $conn->close();
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
-
         </ul>
         <!-- End of Sidebar -->
 
@@ -478,6 +503,7 @@ $conn->close();
                                         新增
                                     </a>
                                 </button> -->
+
                                 <!-- 升降冪 -->
                                 <div class=" col d-flex justify-content-between">
                                     <!-- <form class=" col py-2" action="">
@@ -485,7 +511,10 @@ $conn->close();
                                             <button class="btn btn-dark" type="submit" id=""><i class="bi bi-search"></i></button>
                                     </form> -->
                                     <div>
-                                        <a class="btn btn-dark mx-2" href="classroom-add.php"> 增加使用者</a>
+                                        <a class="btn btn-dark mx-2" href="classroom-add.php">
+                                            <i class="fa-solid fa-plus"></i>
+                                            增加練團室
+                                        </a>
 
                                         <?php
                                         if (isset($_GET["search"])) : ?>
@@ -547,40 +576,45 @@ $conn->close();
                             </table>
 
                             <!-- 產生分頁 -->
-                            <div class="py-2">
-                                <nav aria-label="Page navigation example">
-                                    <ul class="pagination d-flex justify-content-center">
-                                        <!-- 若在第一頁，上一頁無效 -->
-                                        <li class="page-item">
-                                            <?php if ($pageNow == 1) : ?>
-                                                <a class="page-link disabled" aria-label="Previous" aria-disabled="true">
-                                                <?php else : ?>
-                                                    <a class="page-link" href="classroom-list.php?page=<?= $pageNow - 1 ?>&order=<?= $order ?>" aria-label="Previous">
-                                                    <?php endif; ?>
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                    <span class="sr-only">Previous</span>
-                                                    </a>
-                                        </li>
-                                        <!-- 數字頁碼 -->
-                                        <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
-                                            <li class="page-item <?php if ($pageNow == $i) echo "active"; ?>">
-                                                <a class="page-link" href="classroom-list.php?page=<?= $i ?>&order=<?= $order ?>"><?= $i ?></a>
+                            <!-- 如有search頁碼消失 -->
+                            <?php if (!isset($_GET["search"])) : ?>
+                                <div class="py-2">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination d-flex justify-content-center">
+                                            <!-- 若在第一頁，上一頁無效 -->
+                                            <li class="page-item">
+                                                <?php if ($pageNow == 1) : ?>
+                                                    <a class="page-link disabled" aria-label="Previous" aria-disabled="true">
+                                                        <!-- renders a disabled "Previous" link or  -->
+                                                    <?php else : ?>
+                                                        <a class="page-link" href="classroom-list.php?page=<?= $pageNow - 1 ?>&order=<?= $order ?>" aria-label="Previous">
+                                                            <!-- provides an active link pointing to the previous page -->
+                                                        <?php endif; ?>
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                        <span class="sr-only">Previous</span>
+                                                        </a>
                                             </li>
-                                        <?php endfor; ?>
-                                        <li class="page-item">
-                                            <!-- 若在最後一頁，下一頁無效 -->
-                                            <?php if ($pageNow == $pageCount) : ?>
-                                                <a class="page-link disabled" aria-label="Next" aria-disabled="true">
-                                                <?php else : ?>
-                                                    <a class="page-link" href="classroom-list.php?page=<?= $pageNow + 1 ?>&order=<?= $order ?>" aria-label="Next">
-                                                    <?php endif; ?>
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                    <span class="sr-only">Next</span>
-                                                    </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
+                                            <!-- 數字頁碼 -->
+                                            <?php for ($i = 1; $i <= $pageCount; $i++) : ?>
+                                                <li class="page-item <?php if ($pageNow == $i) echo "active"; ?>">
+                                                    <a class="page-link" href="classroom-list.php?page=<?= $i ?>&order=<?= $order ?>"><?= $i ?></a>
+                                                </li>
+                                            <?php endfor; ?>
+                                            <li class="page-item">
+                                                <!-- 若在最後一頁，下一頁無效 -->
+                                                <?php if ($pageNow == $pageCount) : ?>
+                                                    <a class="page-link disabled" aria-label="Next" aria-disabled="true">
+                                                    <?php else : ?>
+                                                        <a class="page-link" href="classroom-list.php?page=<?= $pageNow + 1 ?>&order=<?= $order ?>" aria-label="Next">
+                                                        <?php endif; ?>
+                                                        <span aria-hidden="true">&raquo;</span>
+                                                        <span class="sr-only">Next</span>
+                                                        </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,7 @@ if (!isset($_GET["id"])) {
 $id = $_GET["id"];
 
 
-require_once("boundless_connect.php");
+require_once("../boundless_connect.php");
 
 // $conn = new mysqli($servername, $username, $password, $dbname);
 // // 檢查連線
@@ -77,7 +77,7 @@ $row = $result->fetch_assoc();
 
     <div class="container">
         <div class="py-2">
-            <a class="btn btn-info text-white" href="classroom-detail.php?id=<?= $row["id"] ?>" title="回使用者列表"><i class="bi bi-arrow-left">回練團室詳細資訊</i></a>
+            <a class="btn btn-dark text-white" href="classroom-detail.php?id=<?= $row["id"] ?>" title="回使用者列表"><i class="bi bi-arrow-left">回練團室詳細資訊</i></a>
         </div>
         <?php if ($classroomCount == 0) : ?>
             <h1>練團室不存在</h1>
@@ -127,8 +127,8 @@ $row = $result->fetch_assoc();
 
                 <div class="py-2 d-flex justify-content-end">
                     <div>
-                        <button class="btn btn-info text-white" type="submit">儲存</button>
-                        <a class="btn btn-info text-white" href="classroom-detail.php?id=<?= $row["id"] ?>">取消</a>
+                        <button class="btn btn-dark text-white" type="submit">儲存</button>
+                        <a class="btn btn-dark text-white" href="classroom-detail.php?id=<?= $row["id"] ?>">取消</a>
                     </div>
                     <!-- 
                     <div>
